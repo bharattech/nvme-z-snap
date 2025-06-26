@@ -29,4 +29,4 @@ Snaps are confined, as such NVMe-Z may be unable to perform some of the tasks it
 snap connect nvme-z:hardware-observe
 ```
 
-<iframe title="Publicise card" src="https://snapcraft.io/nvme-z/embedded?button=black&channels=true&summary=true&screenshot=true" style="width: 100%; height: 100%; border: 1px solid #CCC; border-radius: 2px;"></iframe>
+[![Publicise card](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/nvme-z)
