@@ -80,17 +80,6 @@ parts:
       npm install
       npm run tauri build -- --bundles deb
 
-      # Install pnpm
-      # npm install -g pnpm@10.10.0
-      # export PATH="$PATH:$HOME/.local/share/pnpm"
-
-      # Install Tauri CLI as a dev dependency locally
-      # pnpm add -D @tauri-apps/cli@2.5.0
-
-      # Build project
-      # pnpm i
-      # pnpm tauri build --bundles deb
-
       dpkg -x src-tauri/target/release/bundle/deb/*.deb $SNAPCRAFT_PART_INSTALL/
 
       sed -i -e "s|Icon=nvme-z|Icon=/usr/share/icons/hicolor/256x256@2/apps/nvme-z.png|g" \
