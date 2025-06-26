@@ -1,6 +1,3 @@
-# snap for nvme-z app
-
-
 <h1 align="center">
   <img src="https://nvme-z.tech/logo-512-fit.png" alt="nvme-z" width="50%">
 </h1>
