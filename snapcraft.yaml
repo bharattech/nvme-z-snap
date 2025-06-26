@@ -1,0 +1,97 @@
+name: nvme-z
+title: NVMe-Z
+icon: snap/gui/icon.png
+type: app
+base: core24
+version: "0.1.25"
+website: https://www.nvme-z.tech
+summary: NVMe-Z, Your NVMe’s Health & Upgrade Zen!
+description: |
+  NVMe-z is a user-friendly application for viewing detailed information about NVMe storage devices on your system. 
+  
+  It provides an intuitive interface to display device health, capabilities, and status, making it easy to monitor and recommends upgrade for best performance.
+  
+  Ideal for both enthusiasts and professionals, NVMe-z helps you keep track of your storage hardware with clarity and ease.
+
+  Snaps are confined, as such NVMe-Z may be unable to perform some of the tasks it typically does when unconfined. 
+  This may result in the system log getting spammed with apparmor errors. 
+  Granting access to the hardware-observe interface when in the snap will enable the features, and thus improve user experience.
+
+grade: stable
+confinement: strict
+
+apps:
+  nvme-z:
+    command: usr/bin/nvme-z
+    desktop: usr/share/applications/nvme-z.desktop
+    extensions: [gnome]
+    plugs:
+      - hardware-observe
+      - system-observe
+      # - mount-observe The gnome extension already includes [ desktop, desktop-legacy, gsettings, opengl, wayland, x11, mount-observe, calendar-service ]
+      - dbus
+      # - home
+      # - raw-usb
+      # - block-devices
+
+slots:
+  single-instance:
+    interface: dbus
+    bus: session
+    name: org.app_nvmez_tech.SingleInstance
+
+plugs:
+  single-instance-plug:
+    interface: dbus
+    bus: session
+    name: org.app_nvmez_tech.SingleInstance
+
+parts:
+  build-app:
+    plugin: dump
+    source: .
+    build-snaps:
+      - node/20/stable
+    build-packages:
+      - libwebkit2gtk-4.1-dev
+      - build-essential
+      - curl
+      - wget
+      - file
+      - libxdo-dev
+      - libssl-dev
+      - libayatana-appindicator3-dev
+      - librsvg2-dev
+      - dpkg
+      - python3 # Needed for node-gyp
+    stage-packages:
+      - nvme-cli
+      - libwebkit2gtk-4.1-0
+      - libayatana-appindicator3-1
+    override-build: |
+      set -eu
+
+      # Install Rust
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      source "$HOME/.cargo/env"
+      
+      npm install -g @tauri-apps/cli@2.5.0
+
+      npm install
+      npm run tauri build -- --bundles deb
+
+      # Install pnpm
+      # npm install -g pnpm@10.10.0
+      # export PATH="$PATH:$HOME/.local/share/pnpm"
+
+      # Install Tauri CLI as a dev dependency locally
+      # pnpm add -D @tauri-apps/cli@2.5.0
+
+      # Build project
+      # pnpm i
+      # pnpm tauri build --bundles deb
+
+      dpkg -x src-tauri/target/release/bundle/deb/*.deb $SNAPCRAFT_PART_INSTALL/
+
+      sed -i -e "s|Icon=nvme-z|Icon=/usr/share/icons/hicolor/256x256@2/apps/nvme-z.png|g" \
+          "$SNAPCRAFT_PART_INSTALL/usr/share/applications/nvme-z.desktop"
